@@ -27,10 +27,31 @@ app.get('/api/test', (req, res) => {
     message: `in this proctected route, we get the user's id like so: ${req.userId}`
   });
 });
-
-app.get('/animals', async(req, res) => {
+console.log('right above this endpoint');
+app.post('/exercises', async(req, res) => {
+  console.log('in the endpoint');
   try {
-    const data = await client.query('SELECT * from animals');
+    const data = await client.query(`INSERT INTO exercises
+     (title, category, prompt) 
+     values($1, $2, $3) 
+     returning *
+     `,
+    [
+      req.body.title,
+      req.body.category,
+      req.body.prompt
+    ]);
+    
+    res.json(data.rows[0]);
+  } catch(e) {
+    
+    res.status(500).json({ error: e.message });
+  }
+});
+console.log('right after this endpoint');
+app.get('/signIn', async(req, res) => {
+  try {
+    const data = await client.query('SELECT * from exercises');
     
     res.json(data.rows);
   } catch(e) {
@@ -38,6 +59,29 @@ app.get('/animals', async(req, res) => {
     res.status(500).json({ error: e.message });
   }
 });
+
+app.get('/registerHere', async(req, res) => {
+  try {
+    const data = await client.query('SELECT * from exercises');
+    
+    res.json(data.rows);
+  } catch(e) {
+    
+    res.status(500).json({ error: e.message });
+  }
+});
+
+app.get('/playground', async(req, res) => {
+  try {
+    const data = await client.query('SELECT * from exercises');
+    
+    res.json(data.rows);
+  } catch(e) {
+    
+    res.status(500).json({ error: e.message });
+  }
+});
+
 
 app.use(require('./middleware/error'));
 
